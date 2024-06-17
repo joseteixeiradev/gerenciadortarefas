@@ -1,27 +1,21 @@
 import os
+from flask import Flask, render_template, request, redirect, url_for
 import uuid
-from flask import Flask, render_template, request, redirect, url_for 
 from datetime import date
 
 app = Flask(__name__)
 
+# Lista de opções de urgência
+urgencia_opcoes = {
+    '0': 'TBC',
+    '1': 'Não Prioritária',
+    '2': 'Baixa Prioridade',
+    '3': 'Média Prioridade',
+    '4': 'Alta Prioridade',
+    '5': 'Elevada Prioridade'
+}
+
 tarefas = []
-
-# Exemplo de estrutura de uma tarefa
-# {
-#     "task_id": "unique-id",
-#     "task_name": "Nome da Tarefa",
-#     "concluida": False,
-#     "descricao": "Descrição da tarefa",
-#     "categoria": "Categoria da tarefa",
-#     "urgencia": "Alta"
-# }
-
-backlog_file = 'backlog.txt'
-
-# Garantir que o arquivo backlog.txt existe
-if not os.path.exists(backlog_file):
-    open(backlog_file, 'w').close()
 
 @app.route('/')
 def index():
@@ -39,7 +33,7 @@ def add_tarefa():
             "concluida": False,
             "descricao": "",
             "categoria": "",
-            "urgencia": ""
+            "urgencia": '0'  # Default to 'TBC'
         })
     return redirect(url_for('index'))
 
@@ -55,13 +49,13 @@ def detalhes_tarefa(task_id):
             # Validação do lado do servidor
             if not descricao or not categoria or not urgencia:
                 error = "Todos os campos são obrigatórios."
-                return render_template('detalhes_tarefa.html', tarefa=tarefa, error=error)
+                return render_template('detalhes_tarefa.html', tarefa=tarefa, error=error, urgencia_opcoes=urgencia_opcoes)
 
             tarefa['descricao'] = descricao
             tarefa['categoria'] = categoria
             tarefa['urgencia'] = urgencia
-            return render_template('detalhes_tarefa.html', tarefa=tarefa)
-        return render_template('detalhes_tarefa.html', tarefa=tarefa)
+            return render_template('detalhes_tarefa.html', tarefa=tarefa, urgencia_opcoes=urgencia_opcoes)
+        return render_template('detalhes_tarefa.html', tarefa=tarefa, urgencia_opcoes=urgencia_opcoes)
     return redirect(url_for('index'))
 
 @app.route('/concluir/<task_id>', methods=['POST'])
@@ -83,19 +77,15 @@ def remover_tarefa(task_id):
     tarefa = next((tarefa for tarefa in tarefas if tarefa["task_id"] == task_id), None)
     if tarefa and request.form.get('confirmacao') == 'Sim':
         motivo = request.form.get('motivo', 'N/A')
-        descricao = tarefa.get('descricao', 'N/A')
-        estado = 'Concluída' if tarefa['concluida'] else 'Pendente'
-        data_formatada = date.today().strftime("%d-%m-%Y")
-        categoria = tarefa.get('categoria', 'N/A')  # Recuperar a categoria da tarefa, se existir
-
-        # Remover a tarefa da lista
         tarefas.remove(tarefa)
-
-        # Adicionar a tarefa ao backlog com a data de remoção e o motivo
-        with open(backlog_file, 'a') as f:
-            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nCategoria: {categoria}\nEstado: {estado.capitalize()}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
-
-    # Retornar uma resposta de redirecionamento após o processamento
+        descricao = tarefa.get('descricao', 'N/A')
+        estado = 'Concluida' if tarefa['concluida'] else 'Pendente'
+        data_formatada = date.today().strftime("%d-%m-%Y")
+        urgencia = tarefa.get('urgencia', '0')
+        urgencia_texto = urgencia_opcoes.get(urgencia, 'TBC')
+        urgencia_formatada = f"{urgencia}-{urgencia_texto}"
+        with open('backlog.txt', 'a') as f:
+            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nEstado: {estado.capitalize()}\nUrgencia: {urgencia_formatada}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
