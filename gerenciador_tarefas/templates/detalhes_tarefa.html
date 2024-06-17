@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Detalhes da Tarefa</h1>
-    <form method="POST" action="{{ url_for('detalhes_tarefa', tarefa_id=tarefa_id) }}">
+    <form method="POST" action="{{ url_for('detalhes_tarefa', task_id=tarefa['task_id']) }}">
         <label for="descricao">Descrição:</label>
         <input type="text" id="descricao" name="descricao" value="{{ tarefa['descricao'] }}">
         <br>

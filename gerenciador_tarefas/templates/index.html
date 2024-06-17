@@ -16,11 +16,11 @@
     <ul>
         {% for tarefa in tarefas_pendentes %}
             <li>
-                <a href="{{ url_for('detalhes_tarefa', tarefa_id=loop.index0) }}">{{ tarefa['task_name'] }}</a>
-                <form method="POST" action="/concluir/{{ loop.index0 }}">
+                <a href="{{ url_for('detalhes_tarefa', task_id=tarefa['task_id']) }}">{{ tarefa['task_name'] }}</a>
+                <form method="POST" action="/concluir/{{ tarefa['task_id'] }}">
                     <button type="submit">Concluir</button>
                 </form>
-                <form method="POST" action="/remover/{{ loop.index0 }}" onsubmit="return confirmarRemocao(this)">
+                <form method="POST" action="/remover/{{ tarefa['task_id'] }}" onsubmit="return confirmarRemocao(this)">
                     <input type="hidden" name="confirmacao" value="Sim">
                     <input type="hidden" name="motivo" value="">
                     <button type="submit">Remover</button>
@@ -32,11 +32,11 @@
     <ul>
         {% for tarefa in tarefas_concluidas %}
             <li>
-                <a href="{{ url_for('detalhes_tarefa', tarefa_id=loop.index0) }}">{{ tarefa['task_name'] }}</a>
-                <form method="POST" action="/pender/{{ loop.index0 }}">
+                <a href="{{ url_for('detalhes_tarefa', task_id=tarefa['task_id']) }}">{{ tarefa['task_name'] }}</a>
+                <form method="POST" action="/pender/{{ tarefa['task_id'] }}">
                     <button type="submit">Pender</button>
                 </form>
-                <form method="POST" action="/remover/{{ loop.index0 }}" onsubmit="return confirmarRemocao(this)">
+                <form method="POST" action="/remover/{{ tarefa['task_id'] }}" onsubmit="return confirmarRemocao(this)">
                     <input type="hidden" name="confirmacao" value="Sim">
                     <input type="hidden" name="motivo" value="">
                     <button type="submit">Remover</button>
