@@ -5,6 +5,7 @@ from datetime import date
 
 app = Flask(__name__)
 
+backlog_file = 'backlog.txt'
 # Lista de opções de urgência
 urgencia_opcoes = {
     '0': 'TBC',
@@ -16,6 +17,10 @@ urgencia_opcoes = {
 }
 
 tarefas = []
+
+# Garantir que o arquivo backlog.txt existe
+if not os.path.exists(backlog_file):
+    open(backlog_file, 'w').close()
 
 @app.route('/')
 def index():
@@ -81,11 +86,12 @@ def remover_tarefa(task_id):
         descricao = tarefa.get('descricao', 'N/A')
         estado = 'Concluida' if tarefa['concluida'] else 'Pendente'
         data_formatada = date.today().strftime("%d-%m-%Y")
+        categoria = tarefa.get('categoria','N/A')
         urgencia = tarefa.get('urgencia', '0')
         urgencia_texto = urgencia_opcoes.get(urgencia, 'TBC')
         urgencia_formatada = f"{urgencia}-{urgencia_texto}"
-        with open('backlog.txt', 'a') as f:
-            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nEstado: {estado.capitalize()}\nUrgencia: {urgencia_formatada}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
+        with open(backlog_file, 'a') as f:
+            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nEstado: {estado.capitalize()}\nCategoria: {categoria}\nUrgencia: {urgencia_formatada}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
