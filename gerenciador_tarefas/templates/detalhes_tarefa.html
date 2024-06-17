@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Tarefa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Detalhes da Tarefa</h1>
+    <form method="POST" action="{{ url_for('detalhes_tarefa', tarefa_id=tarefa_id) }}">
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" value="{{ tarefa['descricao'] }}">
+        <br>
+        <label for="categoria">Categoria:</label>
+        <input type="text" id="categoria" name="categoria" value="{{ tarefa['categoria'] }}">
+        <br>
+        <label for="urgencia">Urgência:</label>
+        <input type="text" id="urgencia" name="urgencia" value="{{ tarefa['urgencia'] }}">
+        <br>
+        <button type="submit">Salvar</button>
+    </form>
+    <a href="{{ url_for('index') }}">Voltar</a>
+</body>
+</html>
