@@ -9,9 +9,9 @@ backlog_file = 'backlog.txt'
 # Lista de opções de urgência
 urgencia_opcoes = {
     '0': 'TBC',
-    '1': 'Não Prioritária',
+    '1': 'Nao Prioritaria',
     '2': 'Baixa Prioridade',
-    '3': 'Média Prioridade',
+    '3': 'Media Prioridade',
     '4': 'Alta Prioridade',
     '5': 'Elevada Prioridade'
 }
