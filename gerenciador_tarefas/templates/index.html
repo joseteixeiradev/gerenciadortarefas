@@ -8,9 +8,9 @@
 </head>
 <body>
     <h1>Gerenciador de Tarefas</h1>
-    <form method="POST" action="/add">
-        <input type="text" name="task_name" placeholder="Nome da Tarefa">
-        <button type="submit">Adicionar Tarefa</button>
+    <form method="POST" action="/add" id="add-tarefa-form">
+        <input type="text" name="task_name" placeholder="Nome da Tarefa" id="task-name" required>
+        <button type="submit" id="add-task-button" disabled>Adicionar Tarefa</button>
     </form>
     <h2>Tarefas Pendentes</h2>
     <ul>
@@ -55,6 +55,24 @@
                 return false;
             }
         }
+
+        // Função para validar o formulário e habilitar/desabilitar o botão de adicionar tarefa
+        function validateAddTaskForm() {
+            const taskNameInput = document.getElementById('task-name');
+            const addTaskButton = document.getElementById('add-task-button');
+
+            if (taskNameInput.value.trim() !== '') {
+                addTaskButton.disabled = false;
+            } else {
+                addTaskButton.disabled = true;
+            }
+        }
+
+        // Adicionar evento de input ao campo de nome da tarefa
+        document.getElementById('task-name').addEventListener('input', validateAddTaskForm);
+
+        // Inicialização para verificar o formulário no carregamento da página
+        validateAddTaskForm();
     </script>
 </body>
 </html>

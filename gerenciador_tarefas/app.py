@@ -48,10 +48,19 @@ def detalhes_tarefa(task_id):
     tarefa = next((tarefa for tarefa in tarefas if tarefa["task_id"] == task_id), None)
     if tarefa:
         if request.method == 'POST':
-            tarefa['descricao'] = request.form.get('descricao')
-            tarefa['categoria'] = request.form.get('categoria')
-            tarefa['urgencia'] = request.form.get('urgencia')
-            return redirect(url_for('index'))
+            descricao = request.form.get('descricao')
+            categoria = request.form.get('categoria')
+            urgencia = request.form.get('urgencia')
+            
+            # Validação do lado do servidor
+            if not descricao or not categoria or not urgencia:
+                error = "Todos os campos são obrigatórios."
+                return render_template('detalhes_tarefa.html', tarefa=tarefa, error=error)
+
+            tarefa['descricao'] = descricao
+            tarefa['categoria'] = categoria
+            tarefa['urgencia'] = urgencia
+            return render_template('detalhes_tarefa.html', tarefa=tarefa)
         return render_template('detalhes_tarefa.html', tarefa=tarefa)
     return redirect(url_for('index'))
 
@@ -74,13 +83,19 @@ def remover_tarefa(task_id):
     tarefa = next((tarefa for tarefa in tarefas if tarefa["task_id"] == task_id), None)
     if tarefa and request.form.get('confirmacao') == 'Sim':
         motivo = request.form.get('motivo', 'N/A')
-        tarefas.remove(tarefa)
         descricao = tarefa.get('descricao', 'N/A')
-        estado = 'Concluida' if tarefa['concluida'] else 'Pendente'
+        estado = 'Concluída' if tarefa['concluida'] else 'Pendente'
         data_formatada = date.today().strftime("%d-%m-%Y")
+        categoria = tarefa.get('categoria', 'N/A')  # Recuperar a categoria da tarefa, se existir
+
+        # Remover a tarefa da lista
+        tarefas.remove(tarefa)
+
         # Adicionar a tarefa ao backlog com a data de remoção e o motivo
         with open(backlog_file, 'a') as f:
-            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nEstado: {estado.capitalize()}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
+            f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nCategoria: {categoria}\nEstado: {estado.capitalize()}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
+
+    # Retornar uma resposta de redirecionamento após o processamento
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
