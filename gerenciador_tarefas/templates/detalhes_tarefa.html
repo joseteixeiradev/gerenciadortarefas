@@ -26,54 +26,140 @@
         .category-grid input[type="radio"]:checked + label {
             color: #007bff;
         }
+           /* Estilos existentes */
+        .details-form {
+            display: none;
+        }
+
+        /* Novo estilo para o botão "Salvar" */
+        .save-button {
+            display: none; /* Inicia oculto */
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-gap: 10px;
+            align-items: center;
+        }
+        .form-grid label {
+            text-align: right;
+            padding-right: 10px;
+        }
+        .task-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .task-details-table, .task-details-table th, .task-details-table td {
+            border: 1px solid black;
+        }
+        .task-details-table th, .task-details-table td {
+            padding: 10px;
+            text-align: left;
+        }
+        .task-details-table th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
-    <h1>Detalhes da Tarefa</h1>
-    <form method="POST" action="{{ url_for('detalhes_tarefa', task_id=tarefa['task_id']) }}">
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" value="{{ tarefa['descricao'] }}">
-        <br>
-        <label for="categoria">Categoria:</label>
-        <div class="category-grid">
-            <input type="radio" id="categoria-life" name="categoria" value="Life" {% if tarefa['categoria'] == 'Life' %}checked{% endif %}>
-            <label for="categoria-life">
-                <div class="icon"><i class="fas fa-heart"></i></div>
-                Life
-            </label>
-            <input type="radio" id="categoria-academic" name="categoria" value="Academic" {% if tarefa['categoria'] == 'Academic' %}checked{% endif %}>
-            <label for="categoria-academic">
-                <div class="icon"><i class="fas fa-graduation-cap"></i></div>
-                Academic
-            </label>
-            <input type="radio" id="categoria-work" name="categoria" value="Work" {% if tarefa['categoria'] == 'Work' %}checked{% endif %}>
-            <label for="categoria-work">
-                <div class="icon"><i class="fas fa-briefcase"></i></div>
-                Work
-            </label>
-        </div>
-        <br>
-        <label for="urgencia">Urgência:</label>
-        <select id="urgencia" name="urgencia">
-            {% for key, value in urgencia_opcoes.items() %}
-                <option value="{{ key }}" {% if tarefa['urgencia'].startswith(key) %}selected{% endif %}>{{ key }}-{{ value }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <button type="submit" id="save-button">Salvar</button>
-    </form>
+    <h1>Detalhes da Tarefa {{ tarefa['task_name'] }}</h1>
+      <!-- Tabela com os atributos da tarefa -->
+      <table class="task-details-table">
+        <tr>
+            <th>Atributo</th>
+            <th>Valor</th>
+        </tr>
+        <tr>
+            <td>Nome</td>
+            <td>{{ tarefa['task_name'] }}</td>
+        </tr>
+        <tr>
+            <td>Descrição</td>
+            <td>{{ tarefa['descricao'] }}</td>
+        </tr>
+        <tr>
+            <td>Categoria</td>
+            <td>{{ tarefa['categoria'] }}</td>
+        </tr>
+        <tr>
+            <td>Urgência</td>
+            <td>{{ tarefa['urgencia'] }}</td>
+        </tr>
+        <tr>
+            <td>Estado</td>
+            <td>{{ 'Concluída' if tarefa['concluida'] else 'Pendente' }}</td>
+        </tr>
+    </table>
+    <button id="details-button">Adicionar/Editar Detalhes</button>
+    <div id="details-form">
+        <form method="POST" action="{{ url_for('detalhes_tarefa', task_id=tarefa['task_id']) }}">
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" name="descricao" value="{{ tarefa['descricao'] }}">
+            <br>
+            <label for="categoria">Categoria:</label>
+            <div class="category-grid">
+                <input type="radio" id="categoria-life" name="categoria" value="Life" {% if tarefa['categoria'] == 'Life' %}checked{% endif %}>
+                <label for="categoria-life">
+                    <div class="icon"><i class="fas fa-heart"></i></div>
+                    Life
+                </label>
+                <input type="radio" id="categoria-academic" name="categoria" value="Academic" {% if tarefa['categoria'] == 'Academic' %}checked{% endif %}>
+                <label for="categoria-academic">
+                    <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+                    Academic
+                </label>
+                <input type="radio" id="categoria-work" name="categoria" value="Work" {% if tarefa['categoria'] == 'Work' %}checked{% endif %}>
+                <label for="categoria-work">
+                    <div class="icon"><i class="fas fa-briefcase"></i></div>
+                    Work
+                </label>
+            </div>
+            <br>
+            <label for="urgencia">Urgência:</label>
+            <select id="urgencia" name="urgencia">
+                {% for key, value in urgencia_opcoes.items() %}
+                    <option value="{{ key }}-{{ value }}" {% if tarefa['urgencia'] == (key ~ '-' ~ value) %}selected{% endif %}>{{ key }}-{{ value }}</option>
+                {% endfor %}
+            </select>
+            <br>
     
+    
+            </div>
+            <button type="submit" id="save-button">Salvar</button>
+        </form>
+    </div>
+
     <!-- Botão Voltar para retornar à página inicial -->
     <a href="{{ url_for('index') }}">Voltar</a>
 
     <script>
-        // Função que verifica se todos os campos obrigatórios estão preenchidos e habilita ou desabilita o botão "Salvar" com base nisso.
+    document.addEventListener('DOMContentLoaded', function() {
+        const detailsForm = document.getElementById('details-form');
+        const saveButton = document.getElementById('save-button');
+
+        // Oculta o formulário de detalhes e o botão "Salvar"
+        detailsForm.style.display = 'none';
+        saveButton.style.display = 'none';
+
+        // Função para alternar a visibilidade do formulário de detalhes
+        document.getElementById('details-button').addEventListener('click', function() {
+            if (detailsForm.style.display === 'none' || detailsForm.style.display === '') {
+                detailsForm.style.display = 'block';
+                saveButton.style.display = 'block';
+            } else {
+                detailsForm.style.display = 'none';
+                saveButton.style.display = 'none';
+            }
+        });
+
+        // Função para validar o formulário e habilitar/desabilitar o botão "Salvar"
         function validateForm() {
             const descricao = document.getElementById('descricao').value;
             const categoria = document.querySelector('input[name="categoria"]:checked');
             const urgencia = document.getElementById('urgencia').value;
 
-            const saveButton = document.getElementById('save-button');
             if (descricao && categoria && urgencia) {
                 saveButton.disabled = false;
             } else {
@@ -81,6 +167,7 @@
             }
         }
 
+        // Adiciona listeners para os eventos que podem alterar o estado do botão "Salvar"
         document.getElementById('descricao').addEventListener('input', validateForm);
         document.querySelectorAll('input[name="categoria"]').forEach((elem) => {
             elem.addEventListener('change', validateForm);
@@ -88,7 +175,8 @@
         document.getElementById('urgencia').addEventListener('change', validateForm);
 
         // Chama a função para definir o estado inicial do botão "Salvar"
-        validateForm();
+       // validateForm();
+    });
     </script>
 </body>
 </html>
