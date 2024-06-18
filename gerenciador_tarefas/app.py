@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
 import uuid
-from datetime import date
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -85,11 +85,11 @@ def remover_tarefa(task_id):
         tarefas.remove(tarefa)
         descricao = tarefa.get('descricao', 'N/A')
         estado = 'Concluida' if tarefa['concluida'] else 'Pendente'
-        data_formatada = date.today().strftime("%d-%m-%Y")
+        data_formatada = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
         categoria = tarefa.get('categoria','N/A')
         urgencia = tarefa.get('urgencia', '0')
-        urgencia_texto = urgencia_opcoes.get(urgencia, 'TBC')
-        urgencia_formatada = f"{urgencia}-{urgencia_texto}"
+        urgencia_texto = urgencia_opcoes.get(urgencia)
+        urgencia_formatada = f"{urgencia}-{urgencia_texto}" if urgencia_texto else urgencia
         with open(backlog_file, 'a') as f:
             f.write(f"Tarefa: {tarefa['task_name']}\nDescricao: {descricao}\nEstado: {estado.capitalize()}\nCategoria: {categoria}\nUrgencia: {urgencia_formatada}\nData de Remocao: {data_formatada}\nMotivo: {motivo}\n\n\n")
     return redirect(url_for('index'))

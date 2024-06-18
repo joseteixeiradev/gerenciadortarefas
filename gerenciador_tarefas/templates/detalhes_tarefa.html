@@ -35,32 +35,53 @@
         .save-button {
             display: none; /* Inicia oculto */
         }
+        
+        .back-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adicionei um espaço acima do botão */
+        }
 
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            grid-gap: 10px;
-            align-items: center;
+            grid-gap: 5px;
+            align-items: normal;
         }
         .form-grid label {
             text-align: right;
             padding-right: 10px;
         }
         .task-details-table {
-            width: 100%;
+            width: auto;
+            max-width: 70%; /* Defina um valor máximo para evitar que a tabela fique muito larga */
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Aumentei um pouco para garantir espaço */
         }
-        .task-details-table, .task-details-table th, .task-details-table td {
+
+        .task-details-table th,
+        .task-details-table td {
+            padding: 12px; /* Aumentei o padding para dar mais espaço ao conteúdo */
+            text-align: left;
             border: 1px solid black;
         }
-        .task-details-table th, .task-details-table td {
+
+        .task-details-table th {
+            background-color: hwb(188 15% 57%);
+            color: white;
             padding: 10px;
             text-align: left;
+            border: 1px solid black;
         }
-        .task-details-table th {
-            background-color: #f2f2f2;
+
+        .task-details-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid black;
+            background-color: rgb(46, 164, 201);
+            color: rgb(0, 0, 0);
         }
+
     </style>
 </head>
 <body>
@@ -132,7 +153,7 @@
     </div>
 
     <!-- Botão Voltar para retornar à página inicial -->
-    <a href="{{ url_for('index') }}">Voltar</a>
+    <a href="{{ url_for('index') }}" class="back-button">Voltar</a>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
